@@ -4,19 +4,26 @@ import random
 
 pygame.init()
 
-
-
 window_width=1280
-window_height=720
+window_height=768
+
 gameWindow=pygame.display.set_mode((window_width,window_height))
 pygame.display.set_caption('Tanks game project')
+background=pygame.image.load('Map.png')
 
 icon=pygame.image.load("Tank.png") #добавить иконку
 pygame.display.set_icon(icon)
-
 clock = pygame.time.Clock()
 
+#player
+PlayerImage=pygame.image.load("Tank.png")
 
+#enemy
+EnemyImage=pygame.image.load("Tank2.png")
+enemyX=random.randint(0,800)
+enemyY=random.randint(50,150)
+
+#fonts
 s_font=pygame.font.SysFont("comincsansms",25)
 m_font=pygame.font.SysFont("comincsansms",50)
 l_font=pygame.font.SysFont("comincsansms",85)
@@ -63,7 +70,9 @@ def game_controls():
         pygame.display.update()
         clock.tick(15)
 def tank(x,y):
-    pygame.draw.circle(gameWindow,(0,150,0),(int(x),int(y)),20)
+    gameWindow.blit(PlayerImage,(int(x),int(y)))
+def enemy(x,y):
+    gameWindow.blit(EnemyImage,(int(x),int(y)))
 def button(text,x,y,width,height,inactive_color,active_color,action=None):
     cur= pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
@@ -127,8 +136,9 @@ def game_intro():
         pygame.display.update()
         clock.tick(15)
 def gameLoop():
-    mainTankX = window_width * 0.9
-    mainTankY = window_height * 0.9
+    mainTankX = window_width * 0.8
+    mainTankY = window_height * 0.8
+    Tangle = 0
     speed = 8
     gameExit=False
     gameOver=False
@@ -157,16 +167,20 @@ def gameLoop():
                 if event.key == pygame.K_p:
                     pause()
         key = pygame.key.get_pressed()
-        if key[pygame.K_LEFT]:
+        if key[pygame.K_LEFT] and mainTankX>speed:
             mainTankX -= speed
-        elif key[pygame.K_RIGHT]:
+        elif key[pygame.K_RIGHT]and mainTankX<window_width:
             mainTankX +=speed
-        elif key[pygame.K_UP]:
+            Tangle+=90
+
+        elif key[pygame.K_UP]and mainTankY>speed:
             mainTankY -=speed
-        elif key[pygame.K_DOWN]:
+        elif key[pygame.K_DOWN]and mainTankY<window_height:
             mainTankY +=speed
 
         gameWindow.fill((255,255,255))
+        gameWindow.blit(background,(0,0))
+        enemy(enemyX, enemyY)
         tank(mainTankX,mainTankY)
         pygame.display.update()
         clock.tick(FPS)
