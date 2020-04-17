@@ -17,6 +17,8 @@ clock = pygame.time.Clock()
 
 #player
 PlayerImage=pygame.image.load("Tank.png")
+#Shell
+Shell=pygame.image.load("Shell.png")
 
 #enemy
 EnemyImage=pygame.image.load("Tank2.png")
@@ -110,6 +112,20 @@ def pause():
                     pygame.quit()
                     quit()
         clock.tick(5)
+"""def fireShell(xy,tankx,tanky):
+    fire=True
+    startingShell=list(xy)
+    print("Fire!",xy)
+    while fire:
+        for event in pygame.event.get():
+            if event.type==pygame.QUIT:
+                pygame.quit()
+                quit()
+        print(startingShell[0],startingShell[1])
+        gameWindow.blit(Shell,(startingShell[0],startingShell[1]))
+        startingShell[0]-=5
+        pygame.display.update()
+        clock.tick(5)"""
 def game_intro():
     intro = True
     while intro:
@@ -136,6 +152,7 @@ def game_intro():
         pygame.display.update()
         clock.tick(15)
 def gameLoop():
+
     mainTankX = window_width * 0.8
     mainTankY = window_height * 0.8
     Tangle = 0
@@ -145,6 +162,7 @@ def gameLoop():
     FPS = 15
 
     while not gameExit:
+        gunpos=tank(mainTankX,mainTankY)
         if gameOver==True:
             msg_screen("GAME OVER",(0,255,0),-50,size="large")
             msg_screen("Press C to play again or Q to quit",(0,0,0),50,size="medium")
@@ -172,12 +190,13 @@ def gameLoop():
         elif key[pygame.K_RIGHT]and mainTankX<window_width:
             mainTankX +=speed
             Tangle+=90
-
         elif key[pygame.K_UP]and mainTankY>speed:
             mainTankY -=speed
         elif key[pygame.K_DOWN]and mainTankY<window_height:
             mainTankY +=speed
-
+        elif key[pygame.K_SPACE]:
+            #fireShell(gunpos,mainTankY,mainTankY)
+            pass
         gameWindow.fill((255,255,255))
         gameWindow.blit(background,(0,0))
         enemy(enemyX, enemyY)
