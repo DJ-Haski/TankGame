@@ -2,6 +2,7 @@ import pygame
 import random
 pygame.init()
 file = 'SabatonPrimoVic.mp3'
+file2 = 'shoot.mp3'
 pygame.mixer.init()
 pygame.mixer.music.load(file)
 pygame.mixer.music.play(-1) # -1 для зацикливания
@@ -43,14 +44,16 @@ class Player(pygame.sprite.Sprite):
             self.speedx = 8
         self.rect.x += self.speedx
         if self.rect.right > window_width:
-            self.rect.right = window_width
+            self.rect.right -= window_width
         if self.rect.left < 0:
-            self.rect.left = 0
+            self.rect.left += window_width
 
     def shoot(self):
         bullet = Bullet(self.rect.centerx, self.rect.top)
         all_sprites.add(bullet)
         bullets.add(bullet)
+        #pygame.mixer.music.load(file2)
+        #pygame.mixer.music.play(1)
 
 class Mob(pygame.sprite.Sprite):
     def __init__(self):
