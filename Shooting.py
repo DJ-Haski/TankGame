@@ -25,6 +25,8 @@ background=pygame.image.load('Map.png')
 icon=pygame.image.load("Tank.png")
 pygame.display.set_icon(icon)
 score = 0
+
+diffic = 4
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
@@ -98,21 +100,30 @@ mobs = pygame.sprite.Group()
 bullets = pygame.sprite.Group()
 player = Player()
 all_sprites.add(player)
-for i in range(4):
+for i in range(diffic):
     m = Mob()
     all_sprites.add(m)
     mobs.add(m)
 running = True
+ammo = 10
 while running:
+
     background = pygame.image.load('Map.png')
     clock.tick(FPS)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
+            if event.key == pygame.K_SPACE and ammo >0:
                 player.shoot()
-
+                ammo-=1
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_r:
+                ammo=10
+    if score >25:
+        m = Mob()
+        all_sprites.add(m)
+        mobs.add(m)
     all_sprites.update()
     hits = pygame.sprite.groupcollide(mobs, bullets, True, True)
     for hit in hits:
@@ -120,6 +131,7 @@ while running:
         all_sprites.add(m)
         mobs.add(m)
         score=score+1
+
     hits = pygame.sprite.spritecollide(player, mobs, False)
     if hits:
         m = Mob()
@@ -135,6 +147,8 @@ while running:
     font = pygame.font.Font(None, 74)
     text = font.render("Your score: " + str(score), 1, WHITE)
     gameWindow.blit(text, (10, 10))
+    text = font.render("Your ammo: " + str(ammo), 2, WHITE)
+    gameWindow.blit(text, (10, 50))
     all_sprites.draw(gameWindow)
     background = pygame.image.load('Map.png')
     pygame.display.flip()
