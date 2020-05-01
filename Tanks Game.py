@@ -3,7 +3,10 @@ import time
 import random
 
 pygame.init()
-
+file = 'SabatonPrimoVic.mp3'
+pygame.mixer.init()
+pygame.mixer.music.load(file)
+pygame.mixer.music.play(-1) # -1 для зацикливания
 window_width=1280
 window_height=768
 UP=0
