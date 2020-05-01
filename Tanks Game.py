@@ -15,28 +15,11 @@ gameWindow=pygame.display.set_mode((window_width,window_height))
 pygame.display.set_caption('Tanks game project')
 background=pygame.image.load('Map.png')
 
-icon=pygame.image.load("Tank.png") #добавить иконку
+icon=pygame.image.load("Tank.png")
 pygame.display.set_icon(icon)
 clock = pygame.time.Clock()
-
-#player
-
-
 #Shell
 Shell=pygame.image.load("Shell.png")
-ShellSpeed=500
-ShellLifeTime=2000
-ShellX=random.randint(0,800)
-ShellY=random.randint(50,150)
-ShellX_change=4
-ShellY_chage=40
-
-
-#enemy
-EnemyImage=pygame.image.load("Tank2.png")
-enemyX=random.randint(0,800)
-enemyY=random.randint(50,150)
-
 #fonts
 s_font=pygame.font.SysFont("comincsansms",25)
 m_font=pygame.font.SysFont("comincsansms",50)
@@ -85,8 +68,6 @@ def game_controls():
 
         pygame.display.update()
         clock.tick(15)
-def enemy(x, y):
-    gameWindow.blit(EnemyImage, (int(x), int(y)))
 def button(text, x, y, width, height, inactive_color, active_color, action=None):
     cur = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
@@ -138,6 +119,28 @@ def pause():
         startingShell[0]-=5
         pygame.display.update()
         clock.tick(5)"""
+
+all_sprites = pygame.sprite.Group()
+bullets = pygame.sprite.Group()
+def shoot(Tx,Ty):
+    bullet = Bullet(Tx.rect.centerx, Ty.rect.top)
+    all_sprites.add(bullet)
+    bullets.add(bullet)
+class Bullet(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((10, 20))
+        self.image = pygame.image.load("Shell.png")
+        self.rect = self.image.get_rect()
+        self.rect.bottom = y
+        self.rect.centerx = x
+        self.speedy = -10
+
+    def update(self):
+        self.rect.y += self.speedy
+
+        if self.rect.bottom < 0:
+            self.kill()
 def game_intro():
     intro = True
     while intro:
@@ -156,7 +159,7 @@ def game_intro():
         msg_screen("and not get destroyed by enemy", (0, 0, 0), 10, size="small")
         # msg_screen("Press C to start, P to pause and Q to quit", (0, 0, 0), 90, size="medium")
 
-        button("Solo game", 220, 500, 200, 50, (0, 200, 0), (0, 255, 0), action="play")
+        button("1 by 1 game", 220, 500, 200, 50, (0, 200, 0), (0, 255, 0), action="play")
         button("Online", 540, 500, 200, 50, (200, 200, 0), (255, 255, 0), action="online")
         button("Quit", 860, 500, 200, 50, (200, 0, 0), (255, 0, 0), action="quit")
         button("Controls", 1050, 650, 200, 50, (200, 200, 0), (255, 255, 0), action="controls")
@@ -169,12 +172,21 @@ def gameLoop():
     gameOver = False
     FPS = 30
     Tank_surf = pygame.image.load('Tank.png')
+    Tank2_surf = pygame.image.load('Tank2.png')
     Tank_surf.set_colorkey((255, 255, 255))
-    Tank_rect = Tank_surf.get_rect(center=(200, 150))
+    Tank2_surf.set_colorkey((255, 255, 255))
+    Tank_rect = Tank_surf.get_rect(center=(1100, 700))
+    Tank2_rect = Tank2_surf.get_rect(center=(200, 150))
 
     pygame.display.update()
     rot = pygame.transform.rotate(Tank_surf, 0)
-    rot_rect = rot.get_rect(center=(200, 150))
+    rot_rect = rot.get_rect(center=(1100, 700))
+    rot2 = pygame.transform.rotate(Tank2_surf, 0)
+    rot2_rect = rot2.get_rect(center=(200, 150))
+    def shoot(x):
+        bullet = Bullet(rot.rect.centerx, rot_rect.rect.top)
+        all_sprites.add(bullet)
+        bullets.add(bullet)
     while not gameExit:
         if gameOver == True:
             msg_screen("GAME OVER", (0, 255, 0), -50, size="large")
@@ -195,17 +207,26 @@ def gameLoop():
         for i in a:
             if i.type == pygame.QUIT:  # выход
                 pygame.quit()
-            if i.type == pygame.KEYDOWN and i.key == pygame.K_RIGHT:  # при нажатии вправо
-                rot = pygame.transform.rotate(Tank_surf, -90)  # повернется на -90 градусов
-            elif i.type == pygame.KEYDOWN and i.key == pygame.K_UP:  # при нажатии вверх
-                rot = pygame.transform.rotate(Tank_surf, 0)  # повернется на 0 градусов
-            elif i.type == pygame.KEYDOWN and i.key == pygame.K_LEFT:  # при нажатии влево
-                rot = pygame.transform.rotate(Tank_surf, 90)  # повернется на 90 градусов
-            elif i.type == pygame.KEYDOWN and i.key == pygame.K_DOWN:  # при нажатии вниз
-                rot = pygame.transform.rotate(Tank_surf, 180)  # повернется на 180 градусов
+            if i.type == pygame.KEYDOWN and i.key == pygame.K_RIGHT:
+                rot = pygame.transform.rotate(Tank_surf, -90)
+            elif i.type == pygame.KEYDOWN and i.key == pygame.K_UP:
+                rot = pygame.transform.rotate(Tank_surf, 0)
+            elif i.type == pygame.KEYDOWN and i.key == pygame.K_LEFT:
+                rot = pygame.transform.rotate(Tank_surf, 90)
+            elif i.type == pygame.KEYDOWN and i.key == pygame.K_DOWN:
+                rot = pygame.transform.rotate(Tank_surf, 180)
+            if i.type == pygame.KEYDOWN and i.key == pygame.K_d:
+                rot2 = pygame.transform.rotate(Tank2_surf, 90)
+            elif i.type == pygame.KEYDOWN and i.key == pygame.K_w:
+                rot2 = pygame.transform.rotate(Tank2_surf, 180)
+            elif i.type == pygame.KEYDOWN and i.key == pygame.K_a:
+                rot2 = pygame.transform.rotate(Tank2_surf, -90)
+            elif i.type == pygame.KEYDOWN and i.key == pygame.K_s:
+                rot2 = pygame.transform.rotate(Tank2_surf, 0)
             if i.type == pygame.KEYDOWN and i.key == pygame.K_p:
                     pause()
         gameWindow.blit(rot, rot_rect)
+        gameWindow.blit(rot2, rot2_rect)
         pygame.display.update()
 
         keys = pygame.key.get_pressed()
@@ -217,6 +238,8 @@ def gameLoop():
             rot_rect.x -= 5
         elif keys[pygame.K_DOWN]:
             rot_rect.y += 5
+        elif keys[pygame.K_BACKSPACE]:
+            shoot()
         if rot_rect.x <0:
             rot_rect.x+=window_width
         if rot_rect.y < 0:
@@ -225,11 +248,29 @@ def gameLoop():
             rot_rect.x -= window_width
         if rot_rect.y > window_height:
             rot_rect.y -= window_height
+        elif keys[pygame.K_SPACE]:
+            shoot()
+
+        if keys[pygame.K_d]:
+            rot2_rect.x += 5
+        elif keys[pygame.K_w]:
+            rot2_rect.y -= 5
+        elif keys[pygame.K_a]:
+            rot2_rect.x -= 5
+        elif keys[pygame.K_s]:
+            rot2_rect.y += 5
+        if rot2_rect.x <0:
+            rot2_rect.x+=window_width
+        if rot2_rect.y < 0:
+            rot2_rect.y += window_height
+        if rot2_rect.x > window_width:
+            rot2_rect.x -= window_width
+        if rot2_rect.y > window_height:
+            rot2_rect.y -= window_height
 
         pygame.time.delay(20)
         gameWindow.fill((255, 255, 255))
         gameWindow.blit(background, (0, 0))
-        enemy(enemyX, enemyY)
         pygame.display.update()
         clock.tick(FPS)
     pygame.quit()
