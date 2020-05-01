@@ -4,16 +4,12 @@ import random
 window_width = 1280
 window_height = 768
 FPS = 30
-
-# Задаем цвета
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
-
-# Создаем игру и окно
 pygame.init()
 pygame.mixer.init()
 gameWindow = pygame.display.set_mode((window_width, window_height))
@@ -99,37 +95,37 @@ for i in range(4):
     all_sprites.add(m)
     mobs.add(m)
 
-# Цикл игры
+
 running = True
 while running:
-    # Держим цикл на правильной скорости
+
     clock.tick(FPS)
-    # Ввод процесса (события)
+
     for event in pygame.event.get():
-        # проверка для закрытия окна
+
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 player.shoot()
 
-    # Обновление
+
     all_sprites.update()
     hits = pygame.sprite.groupcollide(mobs, bullets, True, True)
     for hit in hits:
         m = Mob()
         all_sprites.add(m)
         mobs.add(m)
-    hits = pygame.sprite.spritecollide(player, mobs, False) # Проверка, не ударил ли моб игрока
+    hits = pygame.sprite.spritecollide(player, mobs, False)
     if hits:
         running = False
 
-    # Рендеринг
+
     gameWindow.fill(BLACK)
 
     all_sprites.draw(gameWindow)
     background = pygame.image.load('Map.png')
-    # После отрисовки всего, переворачиваем экран
+
     pygame.display.flip()
 
 pygame.quit()
